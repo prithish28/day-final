@@ -9,7 +9,7 @@ const DashboardPassword = ({ onPasswordVerified }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const staticPassword = '1234567'; // Static password
+    const staticPassword = 'day@board'; // Static password
 
     if (password === staticPassword) {
       onPasswordVerified();
