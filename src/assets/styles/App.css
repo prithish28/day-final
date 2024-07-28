@@ -128,18 +128,7 @@ h1 {
 .video-feed {
   width: 100%;
   height: auto;
-  /* Adjust the clipping path to focus on the central area */
-  clip-path: inset(10% 20% 10% 20%); /* Example values to focus on the central area */
 }
-
-/* Adjust the clipping path for mobile devices */
-@media (max-width: 768px) {
-  .video-feed {
-    /* Ensure the same clipping path for mobile devices */
-    clip-path: inset(10% 20% 10% 20%); /* Example values to focus on the central area */
-  }
-}
-
 .input-container {
   position: relative;
   display: inline-block;
@@ -152,4 +141,11 @@ h1 {
   transform: translateY(-50%);
   font-size: 24px; /* Adjust the size as needed */
   color: green; /* Color of the tick icon */
+}
+
+/* Adjust the clipping path for mobile devices */
+@media (max-width: 768px) {
+  .video-feed {
+    clip-path: inset(30% 0 30% 0);
+  }
 }
