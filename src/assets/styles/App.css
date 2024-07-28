@@ -1,0 +1,153 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f9fafc;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  margin: 20px auto;
+  transition: all 0.3s ease;
+  border: 1px solid #e1e4e8;
+  background: linear-gradient(to bottom right, #ffffff, #f2f4f8);
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 2em;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-weight: bold;
+}
+
+.barcode-input {
+  padding: 12px;
+  font-size: 18px;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin: 10px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease;
+}
+
+.barcode-input:focus {
+  border-color: #006eb8;
+  outline: none;
+}
+
+.date-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.date-picker > * {
+  margin: 0 10px;
+}
+
+.download-button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.download-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .App-header {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .barcode-input {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .download-button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+}
+
+/* Additional Styles for Professional Look */
+.date-picker .react-datepicker__input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.date-picker .react-datepicker__input-container input {
+  border: none;
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.date-picker .react-datepicker__input-container input:focus {
+  border-color: #3498db;
+}
+
+/* Video Container Styles */
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.video-feed {
+  width: 100%;
+  height: auto;
+  clip-path: inset(0 75% 0 0); /* Adjust the clipping path to focus on the left side */
+}
+
+.input-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tick-icon {
+  position: absolute;
+  right: -40px; /* Adjust the position as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px; /* Adjust the size as needed */
+  color: green; /* Color of the tick icon */
+}
+
+/* Adjust the clipping path for mobile devices */
+@media (max-width: 768px) {
+  .video-feed {
+    clip-path: inset(0 75% 0 0); /* Ensure the same clipping path for mobile devices */
+  }
+}

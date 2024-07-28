@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CsLabAttendance from './components/CsLabAttendance';
+import SignIn from './components/SignIn';
+import ProtectedRoute from './routes/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+import Dashboard from './components/Dashboard';
+import './assets/styles/App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/signin" element={<SignIn />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<CsLabAttendance />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
