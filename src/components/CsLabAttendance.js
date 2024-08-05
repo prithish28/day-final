@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/library';
+import Quagga from 'quagga';
 import supabase from '../supabaseClient';
 import '../assets/styles/App.css';
 import { useNavigate } from 'react-router-dom';
 
 function CsLabAttendance() {
   const [barcodeInput, setBarcodeInput] = useState('');
-  const [isSuccessful, setIsSuccessful] = useState(false); // State to control the tick icon visibility
-  const videoRef = useRef(null);
+  const [isSuccessful, setIsSuccessful] = useState(false);
   const inputRef = useRef(null);
+  const videoRef = useRef(null);
   const navigate = useNavigate();
-  const codeReaderRef = useRef(null);
   const scanningRef = useRef(false);
 
   const handleSave = useCallback(async () => {
@@ -32,7 +31,7 @@ function CsLabAttendance() {
 
         // Show tick icon
         setIsSuccessful(true);
-        setTimeout(() => setIsSuccessful(false), 2000); // Hide tick icon after 2 seconds
+        setTimeout(() => setIsSuccessful(false), 2000);
       } else {
         alert('NOT A TTS STUDENT');
       }
@@ -54,32 +53,44 @@ function CsLabAttendance() {
   }, [barcodeInput, handleSave]);
 
   useEffect(() => {
-    codeReaderRef.current = new BrowserMultiFormatReader();
-
-    const startDecoding = async () => {
-      try {
-        await codeReaderRef.current.decodeFromVideoDevice(undefined, videoRef.current, (result, err) => {
-          if (result && !scanningRef.current) {
-            scanningRef.current = true;
-            setBarcodeInput(result.text);
-            setTimeout(() => {
-              scanningRef.current = false;
-            }, 300); // Reduce debounce time to 300ms for faster response
-          } else if (err) {
-            console.error(err);
+    if (videoRef.current) {
+      Quagga.init({
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: videoRef.current, // Pass in the ref to the DOM element
+          constraints: {
+            width: 640,
+            height: 480,
+            facingMode: "environment"
           }
-        });
-      } catch (err) {
-        console.error('Error starting decoding:', err);
-      }
-    };
+        },
+        decoder: {
+          readers: ["code_128_reader", "ean_reader", "ean_8_reader", "code_39_reader", "code_93_reader", "upc_reader", "upc_e_reader"]
+        }
+      }, (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        Quagga.start();
+      });
 
-    startDecoding();
+      Quagga.onDetected((data) => {
+        if (!scanningRef.current) {
+          scanningRef.current = true;
+          setBarcodeInput(data.codeResult.code);
+          setTimeout(() => {
+            scanningRef.current = false;
+          }, 300);
+        }
+      });
 
-    return () => {
-      codeReaderRef.current.reset();
-    };
-  }, []);
+      return () => {
+        Quagga.stop();
+      };
+    }
+  }, [videoRef]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -108,13 +119,13 @@ function CsLabAttendance() {
             onChange={handleInputChange}
             ref={inputRef}
           />
-          {isSuccessful && <span className="tick-icon">✅</span>} {/* Conditionally render tick icon */}
+          {isSuccessful && <span className="tick-icon">✅</span>}
         </div>
         <button onClick={goToDashboard} className="dashboard-button">
           Go to Dashboard
         </button>
         <div className="video-container">
-          <video ref={videoRef} className="video-feed"></video>
+          <div ref={videoRef} className="video-feed"></div>
         </div>
       </header>
     </div>
