@@ -52,6 +52,10 @@ h1 {
   margin-bottom: 20px;
 }
 
+
+
+
+
 .date-picker > * {
   margin: 0 10px;
 }
@@ -148,4 +152,23 @@ h1 {
   .video-feed {
     clip-path: inset(30% 0 30% 0);
   }
+}
+.tick-gif {
+  width: 200px; /* Adjust the size as needed */
+  height: 200px; /* Adjust the size as needed */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* Ensure it's on top of other elements */
+  background: rgba(0, 0, 0, 0.5); /* Optional: Add a semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tick-gif img {
+  max-width: 100%;
+  max-height: 100%;
 }
