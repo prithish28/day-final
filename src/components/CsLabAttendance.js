@@ -1,20 +1,18 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { BrowserMultiFormatReader } from '@zxing/library';
+import React, { useEffect, useRef, useState } from 'react';
+import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import supabase from '../supabaseClient';
 import '../assets/styles/App.css';
-import tickGif from '../assets/tick.gif'; // Import the tick GIF
+import tickGif from '../assets/tick.gif';
 import { useNavigate } from 'react-router-dom';
 
 function CsLabAttendance() {
   const [barcodeInput, setBarcodeInput] = useState('');
-  const [showTick, setShowTick] = useState(false); // State to manage tick GIF visibility
-  const videoRef = useRef(null);
+  const [showTick, setShowTick] = useState(false);
+  const scannerRef = useRef(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
-  const codeReaderRef = useRef(null);
-  const scanningRef = useRef(false);
 
-  const handleSave = useCallback(async () => {
+  const handleSave = async () => {
     try {
       let { data: existingData, error: existError } = await supabase
         .from('attendance_exist')
@@ -30,11 +28,9 @@ function CsLabAttendance() {
         await supabase
           .from('attendance_new')
           .insert([{ adm_no, name, class_sec, timestamp: new Date() }]);
-          
-        // Show tick GIF after successful submission
-        setShowTick(true);
-        setTimeout(() => setShowTick(false), 2000); // Hide the GIF after 2 seconds
 
+        setShowTick(true);
+        setTimeout(() => setShowTick(false), 2000);
       } else {
         alert('NOT A TTS STUDENT');
       }
@@ -46,52 +42,45 @@ function CsLabAttendance() {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [barcodeInput]);
+  };
 
   useEffect(() => {
     const expectedLength = 8;
     if (barcodeInput.length === expectedLength) {
       handleSave();
     }
-  }, [barcodeInput, handleSave]);
+  }, [barcodeInput]);
 
   useEffect(() => {
-    codeReaderRef.current = new BrowserMultiFormatReader();
-
-    const startDecoding = async () => {
-      try {
-        await codeReaderRef.current.decodeFromVideoDevice(undefined, videoRef.current, (result, err) => {
-          if (result && !scanningRef.current) {
-            scanningRef.current = true;
-            setBarcodeInput(result.text);
-            setTimeout(() => {
-              scanningRef.current = false;
-            }, 300); // Reduce debounce time to 300ms for faster response
-          } else if (err) {
-            console.error(err);
-          }
-        });
-      } catch (err) {
-        console.error('Error starting decoding:', err);
-      }
+    const scannerConfig = {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128],
     };
 
-    startDecoding();
+    scannerRef.current = new Html5QrcodeScanner(
+      'reader',
+      scannerConfig,
+      false
+    );
+
+    scannerRef.current.render(
+      (decodedText) => {
+        setBarcodeInput(decodedText);
+      },
+      (error) => {
+        console.warn(`Error scanning: ${error}`);
+      }
+    );
 
     return () => {
-      codeReaderRef.current.reset();
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch((error) => {
+          console.error('Error clearing scanner:', error);
+        });
+      }
     };
   }, []);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
-
-  const handleInputChange = (e) => {
-    setBarcodeInput(e.target.value);
-  };
 
   const goToDashboard = () => {
     navigate('/dashboard');
@@ -107,16 +96,14 @@ function CsLabAttendance() {
             className="barcode-input"
             placeholder="Scan barcode here"
             value={barcodeInput}
-            onChange={handleInputChange}
+            onChange={(e) => setBarcodeInput(e.target.value)}
             ref={inputRef}
           />
         </div>
         <button onClick={goToDashboard} className="dashboard-button">
           Go to Dashboard
         </button>
-        <div className="video-container">
-          <video ref={videoRef} className="video-feed"></video>
-        </div>
+        <div id="reader" className="video-container"></div>
         {showTick && (
           <div className="tick-gif">
             <img src={tickGif} alt="Success" />
