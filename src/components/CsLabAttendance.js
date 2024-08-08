@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import supabase from '../supabaseClient';
 import '../assets/styles/App.css';
+import tickGif from '../assets/tick.gif'; // Import the tick GIF
 import { useNavigate } from 'react-router-dom';
 
 function CsLabAttendance() {
   const [barcodeInput, setBarcodeInput] = useState('');
+  const [showTick, setShowTick] = useState(false); // State to manage tick GIF visibility
   const videoRef = useRef(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
@@ -28,6 +30,10 @@ function CsLabAttendance() {
         await supabase
           .from('attendance_new')
           .insert([{ adm_no, name, class_sec, timestamp: new Date() }]);
+          
+        // Show tick GIF after successful submission
+        setShowTick(true);
+        setTimeout(() => setShowTick(false), 2000); // Hide the GIF after 2 seconds
 
       } else {
         alert('NOT A TTS STUDENT');
@@ -111,6 +117,11 @@ function CsLabAttendance() {
         <div className="video-container">
           <video ref={videoRef} className="video-feed"></video>
         </div>
+        {showTick && (
+          <div className="tick-gif">
+            <img src={tickGif} alt="Success" />
+          </div>
+        )}
       </header>
     </div>
   );
